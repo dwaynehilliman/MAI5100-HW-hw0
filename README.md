@@ -2,7 +2,7 @@
 
 Graduate-level introduction to AI: intelligent agents, search, constraint satisfaction, adversarial search, decision making under uncertainty, reinforcement learning, probabilistic reasoning, and machine learning.
 
-THIS IS A TEST
+THIS IS A TEST 2
 
 | **Info** | **Details** |
 |---|---|
