@@ -1,7 +1,8 @@
 # MAI5100: Fundamentals of Artificial Intelligence @ UG
 
 Graduate-level introduction to AI: intelligent agents, search, constraint satisfaction, adversarial search, decision making under uncertainty, reinforcement learning, probabilistic reasoning, and machine learning.
-JUst testing changes
+
+THIS IS A TEST
 
 | **Info** | **Details** |
 |---|---|
