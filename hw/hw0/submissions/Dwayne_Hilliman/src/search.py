@@ -87,22 +87,23 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    "util.raiseNotDefined()"
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
         
-    # Initialization of the fringe from util.py and the start state of the problem
+    # Initialization of the frontier from util.py and the start state of the problem
     frontier = util.Stack()
-    start_state = problem.getStartState()
+    # initialization of visited to Keep track of visited states for Graph Search using an empty set()
+    visited =set ()
     # Push starting node using a tuple of (state, path_of_actions) onto the stack
-    frontier.push((start_state, []))
-    # Keep track of visited states for Graph Search using an empty set()
-    visited = set()
+    start_state = problem.getStartState()
+    frontier.push((start_state, [])) 
     #Loop while stack is not empty 
     while not frontier.isEmpty():
         #pop the most recently added node (LIFO) in terms of state and action(path)
         current_state, actions = frontier.pop()
+        # skip if already expanded to avoid duplicated
+        if current_state in visited: 
+            continue
+         # Mark as visited upon expansion (pop)
+        visited.add(current_state)
         # Check if we reached the goal upon popping and return if true
         if problem.isGoalState(current_state):
             return actions
@@ -110,7 +111,7 @@ def depthFirstSearch(problem):
         if current_state not in visited:
             visited.add(current_state)
              # Go through the loop pulling the next state using problem.getSuccessor(current_state) in terms of state, action and cost 
-            for next_state, action, step_cost in reversed(problem.getSuccessors(current_state)):
+        for next_state, action, step_cost in problem.getSuccessors(current_state):
                  # Push onto the stack if next_state not in visited
                 if next_state not in visited:
                     new_actions = actions + [action]
