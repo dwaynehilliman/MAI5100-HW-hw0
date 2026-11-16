@@ -87,7 +87,7 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-        
+      
     # Initialization of the frontier from util.py and the start state of the problem
     frontier = util.Stack()
     # initialization of visited to Keep track of visited states for Graph Search using an empty set()
@@ -111,7 +111,7 @@ def depthFirstSearch(problem):
         if current_state not in visited:
             visited.add(current_state)
              # Go through the loop pulling the next state using problem.getSuccessor(current_state) in terms of state, action and cost 
-        for next_state, action, step_cost in problem.getSuccessors(current_state):
+        for next_state, action, step_cost in (problem.getSuccessors(current_state)):
                  # Push onto the stack if next_state not in visited
                 if next_state not in visited:
                     new_actions = actions + [action]
@@ -121,19 +121,81 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+   
+# must import the object named queue from util.py to be to use queue data structure
+    from util import Queue
+ # Initialization of the frontier with a queue from util.py and the start state of the problem
+    frontier = Queue()
+    start_state = problem.getStartState()
+    # initialization of examined to Keep track of visited states for Graph Search using an empty set()
+    examined =set ()
+    # Push starting node using a tuple of (state, path_of_actions) onto the queue
+    frontier.push((start_state, [])) 
+    #visited.add(start_state)
+    #Loop while queue is not empty 
+    while not frontier.isEmpty():
+        #pop the most recently added node (LIFO) in terms of state and action(path)
+        current_state, actions = frontier.pop()
+        # skip if already expanded to avoid duplicated
+        if current_state in examined:
+            continue
+         # Mark as examined upon expansion (pop)
+        examined.add(current_state)
+        # Check if we reached the goal upon popping and return if true
+        if problem.isGoalState(current_state):
+            return actions
+        # Go through the loop pulling the next state using problem.getSuccessor(current_state) in terms of state, action and cost 
+        for next_state, action, step_cost in (problem.getSuccessors(current_state)):
+                 # Push onto the stack if next_state not in visited
+                if next_state not in examined:
+                    new_actions = actions + [action]
+                    frontier.push((next_state, new_actions))            
+    return []
 
-def uniformCostSearch(problem: SearchProblem):
+
+def uniformCostSearch (problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #problem defined as type search_problem
+   # problem:SearchProblem
+    #import the priority queue with function module from util.py
+    #from util import PriorityQueueWithFunction
+    cost_funtion = lambda item:item[2]
+    #Initialize frontier using Priority queue with a function determined by the 3rd element of the tuple: cumulative cost
+    frontier = util.PriorityQueueWithFunction (cost_funtion)
+    # initialization of visited to Keep track of visited states for Graph Search using an empty set()
+    visited =set() 
+        # Push starting node using a tuple of (state, path_of_actions and cost) onto the stack
+    start_state = problem.getStartState()
+    frontier.push((start_state,[],0))
+    #Loop while priority queue is not empty 
+    while not frontier.isEmpty():
+        #pop the most recently added node (LIFO) in terms of state and action(path)
+        current_state, actions, current_cost = frontier.pop()
+        # skip if already expanded to avoid duplicated
+       # if current_state in visited:
+        #        continue
+        # Mark as examined upon expansion (pop)
+        #visited.add(current_state)
+        # Check if we reached the goal upon popping and return if true
+        if problem.isGoalState(current_state):
+            return actions
+         # Graph search: only expand unvisited states
+        if current_state not in visited:
+           visited.add(current_state)
+        for next_state, action, step_cost in problem.getSuccessors(current_state):
+            if next_state not in visited:
+                new_actions = actions + [action]
+                new_cost = current_cost + step_cost
+            frontier.push((next_state, new_actions, new_cost))
 
+    return []
+    
 def nullHeuristic(state, problem=None):
-    """
-    A heuristic function estimates the cost from the current state to the nearest
-    goal in the provided SearchProblem.  This heuristic is trivial.
-    """
-    return 0
+        """
+        A heuristic function estimates the cost from the current state to the nearest
+         goal in the provided SearchProblem.  This heuristic is trivial.
+         """
+        return 0
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
