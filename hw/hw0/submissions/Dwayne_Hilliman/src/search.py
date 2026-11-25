@@ -99,7 +99,7 @@ def depthFirstSearch(problem):
     while not frontier.isEmpty():
         #pop the most recently added node (LIFO) in terms of state and action(path)
         current_state, actions = frontier.pop()
-        # skip if already expanded to avoid duplicated
+        # skip if already expanded to avoid duplicate
         if current_state in visited: 
             continue
          # Mark as visited upon expansion (pop)
@@ -134,9 +134,10 @@ def breadthFirstSearch(problem: SearchProblem):
     #visited.add(start_state)
     #Loop while queue is not empty 
     while not frontier.isEmpty():
-        #pop the most recently added node (LIFO) in terms of state and action(path)
+        #pop the first added node (FIFO) in terms of state and action(path)
         current_state, actions = frontier.pop()
-        # skip if already expanded to avoid duplicated
+        # skip if already expanded to avoid duplicate
+       
         if current_state in examined:
             continue
          # Mark as examined upon expansion (pop)
@@ -155,53 +156,91 @@ def breadthFirstSearch(problem: SearchProblem):
 
 def uniformCostSearch (problem):
     """Search the node of least total cost first."""
-    #problem defined as type search_problem
-   # problem:SearchProblem
-    #import the priority queue with function module from util.py
-    #from util import PriorityQueueWithFunction
+    #Define cost funtion from util.py
     cost_funtion = lambda item:item[2]
     #Initialize frontier using Priority queue with a function determined by the 3rd element of the tuple: cumulative cost
     frontier = util.PriorityQueueWithFunction (cost_funtion)
     # initialization of visited to Keep track of visited states for Graph Search using an empty set()
     visited =set() 
-        # Push starting node using a tuple of (state, path_of_actions and cost) onto the stack
+    # Push starting node using a tuple of (state, path_of_actions and cost) onto the stack
     start_state = problem.getStartState()
     frontier.push((start_state,[],0))
     #Loop while priority queue is not empty 
     while not frontier.isEmpty():
-        #pop the most recently added node (LIFO) in terms of state and action(path)
+        #pop the least recently added node (FIFO) in terms of state and action(path)
         current_state, actions, current_cost = frontier.pop()
-        # skip if already expanded to avoid duplicated
-       # if current_state in visited:
-        #        continue
-        # Mark as examined upon expansion (pop)
-        #visited.add(current_state)
         # Check if we reached the goal upon popping and return if true
         if problem.isGoalState(current_state):
             return actions
-         # Graph search: only expand unvisited states
+        # skip if already expanded to avoid duplicate
+        if current_state in visited:
+            continue
+        # Expand only the unvisited state by checking if current state not in visited set and add if not
         if current_state not in visited:
-           visited.add(current_state)
-        for next_state, action, step_cost in problem.getSuccessors(current_state):
-            if next_state not in visited:
+        # Mark as visitied upon expansion (pop)
+            visited.add(current_state)
+        # Go through the loop pulling the next state using problem.getSuccessor(current_state) in terms of state, action and accumalated cost 
+            for next_state, action, step_cost in problem.getSuccessors(current_state):
+         # Push onto the stack if next_state not in visited, so only expand univisited staes [Graph search]
+             if next_state not in visited:
                 new_actions = actions + [action]
                 new_cost = current_cost + step_cost
-            frontier.push((next_state, new_actions, new_cost))
+                frontier.push((next_state, new_actions, new_cost))
 
     return []
-    
-def nullHeuristic(state, problem=None):
-        """
+ 
+    """
         A heuristic function estimates the cost from the current state to the nearest
-         goal in the provided SearchProblem.  This heuristic is trivial.
-         """
-        return 0
+         goal in the provided SearchProblem. The Manhattan distance heuristic for a PositionSearchProblem
+         """  
 
-def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
+def nullHeuristic(state, problem=None):
+    """
+    A heuristic function estimates the cost from the current state to the nearest
+    goal in the provided SearchProblem.  This heuristic is best used to pass the 
+    autograder which uses graph search
+    """
+    return 0
+
+# In orde to pass the upgrader This manhattan distance cannot be hardcoded
+# Rather call the passed-in heuristic argument rather than directly.
+# Added as reference. 
+""""     
+def manhattanHeuristic(position, problem, info={}):
+    "The Manhattan distance heuristic for a PositionSearchProblem"
+    xy1 = position
+    xy2 = problem.goal
+    return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])"""
+
+def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue
+    frontier = PriorityQueue()
+    start_state = problem.getStartState()
+    # Push tuple: (state, path_of_actions, cost_so_far) with priority Optimal_cost[f] = cost_so_far[g] + heuristic[h]
+    frontier.push((start_state, [], 0), heuristic(start_state, problem))
+    explored = {} # Stores lowest cost_so_far found for each visited state
 
+    while not frontier.isEmpty():
+        state, actions, cost_so_far = frontier.pop()
+
+        if problem.isGoalState(state):
+            return actions
+
+        # Only expand if this state hasn't been reached via a cheaper path
+        if state not in explored or cost_so_far < explored[state]:
+            explored[state] = cost_so_far
+            for next_state, action, step_cost in problem.getSuccessors(state):
+                new_cost_so_far = cost_so_far + step_cost
+                optimal_cost = new_cost_so_far + heuristic(next_state, problem)
+                frontier.push((next_state, actions + [action], new_cost_so_far), optimal_cost)
+                
+    return []
+
+   
+   
+    
+   
 
 # Abbreviations
 bfs = breadthFirstSearch
